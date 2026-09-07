@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://y5yami422unp"]
+
+[ext_resource type="Script" uid="uid://b7v2r5hfy5g12" path="res://scenes/terrain_no_addons/single_gen/ring/ring_road_generator.gd" id="1_lmnvg"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hdicm"]
+albedo_color = Color(1, 1, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_2m4qa"]
+
+[node name="CircleRoadGenerator" type="Node3D" unique_id=81381730]
+script = ExtResource("1_lmnvg")
+rseed = 2
+width = 16
+initial_circle_radius = 50
+number_of_circle_vertices = 10
+number_of_outers = 4
+distance_between_outers = 150
+additional_distance_between_outers = 500
+jank = 0.1
+starting_highways = 8
+max_highway_length = 16
+highway_turn_angle = 5
+split_iterations = 0
+minimum_split_area = 10000
+max_blocked_sector_size = 10000000
+sector_edge_distance = 50.0
+minimal_building_area = 0.0
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=2037310487]
+
+[node name="GroundMesh" type="MeshInstance3D" parent="StaticBody3D" unique_id=1249797458]
+material_override = SubResource("StandardMaterial3D_hdicm")
+mesh = SubResource("BoxMesh_2m4qa")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=502020736]
+
+[node name="SectorPaths" type="Node3D" parent="." unique_id=314077204]
+
+[node name="BuildingMeshes" type="Node3D" parent="." unique_id=1304117233]
+
+[node name="RoadSections" type="Node3D" parent="." unique_id=1780598713]
+
+[node name="Roads" type="Node3D" parent="." unique_id=336526930]
+
+[node name="Buildings" type="Node3D" parent="." unique_id=498758343]

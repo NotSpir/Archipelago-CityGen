@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://cn41qn7u3r6v2"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6s85x"]
+albedo_color = Color(0.6901961, 0.35686275, 0, 1)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_044q6"]
+material = SubResource("StandardMaterial3D_6s85x")
+top_radius = 1.5
+bottom_radius = 1.5
+height = 6.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gl6m1"]
+albedo_color = Color(0.55468506, 0.95035344, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_044q6"]
+material = SubResource("StandardMaterial3D_gl6m1")
+radius = 6.0
+height = 12.0
+
+[node name="MakeshiftTreeRound" type="Node3D" unique_id=110223374]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=2035369038]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.105696, 0)
+mesh = SubResource("CylinderMesh_044q6")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=358446077]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10.332821, 0)
+mesh = SubResource("SphereMesh_044q6")

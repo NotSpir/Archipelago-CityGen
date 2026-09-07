@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://ed6sx05tpo70"]
+
+[ext_resource type="Script" uid="uid://extc3xo8ys7" path="res://scenes/terrain_no_addons/prefabs/car.gd" id="1_dsto4"]
+[ext_resource type="PackedScene" uid="uid://5u6wvh6u4m62" path="res://assets/Car/Free Low Poly Car/FREE_CAR_01.fbx" id="1_vqrcv"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_044q6"]
+size = Vector3(1.736, 1.4, 2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_6s85x"]
+size = Vector3(1.6, 0.75, 2)
+
+[node name="Car" type="Node3D" unique_id=166688199]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0, 0)
+script = ExtResource("1_dsto4")
+
+[node name="FREE_CAR" parent="." unique_id=59389010 instance=ExtResource("1_vqrcv")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5591915, 0, 0.8146305)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=1936527205]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.155854, 0, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1348420838]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3701452, 0.9711573, 0.20635355)
+shape = SubResource("BoxShape3D_044q6")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="StaticBody3D" unique_id=1344227519]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.39908397, 0.6261989, 1.4646022)
+shape = SubResource("BoxShape3D_6s85x")

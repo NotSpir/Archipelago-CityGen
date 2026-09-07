@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dxwh5oewkilix"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_044q6"]
+size = Vector3(6, 3, 6)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_044q6"]
+radius = 1.5
+height = 6.0
+
+[node name="MakeshiftMonument" type="Node3D" unique_id=731468033]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1970411652]
+mesh = SubResource("BoxMesh_044q6")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=53743489]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.148222, 0)
+mesh = SubResource("CapsuleMesh_044q6")

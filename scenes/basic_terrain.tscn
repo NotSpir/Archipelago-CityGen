@@ -1,0 +1,601 @@
+[gd_scene format=3 uid="uid://yjtkxwbr40ww"]
+
+[ext_resource type="Script" uid="uid://b3ccfkene6a8d" path="res://scenes/road_generation_ui.gd" id="1_604k3"]
+[ext_resource type="Script" uid="uid://b78ltnyhjfau2" path="res://scenes/basic_terrain.gd" id="1_aar7s"]
+[ext_resource type="Texture2D" uid="uid://bf8ova2tsbvg" path="res://assets/Panorama/Panorama_Sky_04-512x512.png" id="1_pgjp3"]
+[ext_resource type="Texture2D" uid="uid://b623o0hxam85q" path="res://assets/textures/Black.png" id="2_fbnxr"]
+[ext_resource type="Shader" uid="uid://blx4g1xh2341t" path="res://scenes/assets/water.gdshader" id="5_aar7s"]
+
+[sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_pgjp3"]
+panorama = ExtResource("1_pgjp3")
+
+[sub_resource type="Sky" id="Sky_fbnxr"]
+sky_material = SubResource("PanoramaSkyMaterial_pgjp3")
+
+[sub_resource type="Environment" id="Environment_3y1tt"]
+background_mode = 2
+sky = SubResource("Sky_fbnxr")
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0.57254905, 1, 0.99607843, 1)
+fog_light_energy = 0.66
+fog_sun_scatter = 0.08
+fog_density = 1.0
+fog_aerial_perspective = 1.0
+fog_sky_affect = 0.426
+fog_depth_curve = 0.55478483
+fog_depth_begin = 403.5
+fog_depth_end = 960.8
+
+[sub_resource type="CameraAttributesPractical" id="CameraAttributesPractical_l7ur6"]
+
+[sub_resource type="GDScript" id="GDScript_044q6"]
+script/source = "extends CharacterBody3D
+
+
+var SPEED = 100.0
+var FLIGHT_VELOCITY = 100
+
+
+@onready var camera = $PlayerCamera
+@onready var menu = $RoadGenerationUI
+var is_menu_shown = true
+var camera_speed = 0.1
+
+func _ready() -> void:
+	menu.regen_initiated.connect(reposition)
+	menu.speed_changed.connect(set_speed)
+	menu.flight_changed.connect(set_flight)
+
+func set_speed(val):
+	SPEED = val
+
+func set_flight(val):
+	FLIGHT_VELOCITY = val
+
+func reposition(pos:Vector3):
+	position = pos
+	is_menu_shown = false
+
+func _physics_process(delta: float) -> void:
+	if Input.is_action_just_pressed(\"show_menu\"):
+		is_menu_shown = !is_menu_shown
+		menu.showhide_ui(is_menu_shown)
+	if is_menu_shown: return
+	
+	
+	if Input.is_action_pressed(\"rotate_left\"):
+		rotate_y(camera_speed)
+	if Input.is_action_pressed(\"rotate_right\"):
+		rotate_y(-camera_speed)
+	
+	
+	# Handle flight.
+	if Input.is_action_pressed(\"fly_up\"):
+		velocity.y = FLIGHT_VELOCITY
+	elif Input.is_action_pressed(\"fly_down\"):
+		velocity.y = -FLIGHT_VELOCITY
+	else: velocity.y = 0
+
+	# Get the input direction and handle the movement/deceleration.
+	var input_dir := Input.get_vector(\"move_left\", \"move_right\", \"move_up\", \"move_down\")
+	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	if direction:
+		velocity.x = direction.x * SPEED
+		velocity.z = direction.z * SPEED
+	else:
+		velocity.x = move_toward(velocity.x, 0, SPEED)
+		velocity.z = move_toward(velocity.z, 0, SPEED)
+
+	move_and_slide()
+"
+
+[sub_resource type="Environment" id="Environment_jyrer"]
+background_mode = 1
+background_color = Color(2.9480086e-07, 0.1483298, 0.21390754, 1)
+fog_enabled = true
+fog_mode = 1
+fog_light_color = Color(0, 0.57046324, 0.9650102, 1)
+fog_density = 0.0
+fog_height_density = 16.0
+
+[sub_resource type="GDScript" id="GDScript_aar7s"]
+script/source = "extends Camera3D
+
+@export var player:CharacterBody3D 
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	global_position.x = player.position.x
+	global_position.z = player.position.z
+"
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_044q6"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pgjp3"]
+albedo_color = Color(0, 0.36167142, 0.71266186, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_3y1tt"]
+material = SubResource("StandardMaterial3D_pgjp3")
+radial_segments = 16
+rings = 2
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_le8xr"]
+render_priority = 0
+shader = ExtResource("5_aar7s")
+shader_parameter/wave_0 = Vector4(0.6, 2, 1, 0)
+shader_parameter/wave_1 = Vector4(0.2, 1.5, 0.8, 2.5)
+shader_parameter/wave_2 = Vector4(0.15, 1, 1.2, 5)
+shader_parameter/wave_3 = Vector4(0.1, 0.8, 0.6, 8)
+shader_parameter/noise_scale = 10.0
+shader_parameter/noise_strength = 0.3
+shader_parameter/albedo = Color(0, 0.78039217, 0.7647059, 0.89411765)
+shader_parameter/metallic = 1.0
+shader_parameter/roughness = 0.0
+shader_parameter/specular = 0.0
+shader_parameter/water_level = -1.1176000036527969e-07
+shader_parameter/scale = 5.00000023424012
+shader_parameter/edge_threshold = 0.67999998480064
+shader_parameter/edge_softness = 0.5
+shader_parameter/foam_color = Color(2.117753e-06, 0.9088364, 0.90883666, 1)
+shader_parameter/ssr_max_travel = 24
+shader_parameter/depth_tolerance = 0.2
+shader_parameter/ssr_fresnel_power = 3.0
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_044q6"]
+material = SubResource("ShaderMaterial_le8xr")
+size = Vector2(1000, 1000)
+
+[sub_resource type="GDScript" id="GDScript_le8xr"]
+script/source = "extends MeshInstance3D
+
+@onready var player = $\"../CharacterBody3D\"
+
+func _process(delta:float) -> void:
+	var pos = player.position
+	position = Vector3(pos.x,-4,pos.z)
+"
+
+[node name="Node3D" type="Node3D" unique_id=2032267394]
+script = ExtResource("1_aar7s")
+
+[node name="Decor" type="Node3D" parent="." unique_id=1856702995]
+
+[node name="Cars" type="Node3D" parent="." unique_id=787487576]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=639787525]
+environment = SubResource("Environment_3y1tt")
+camera_attributes = SubResource("CameraAttributesPractical_l7ur6")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=2110670850]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2966.1484, 0)
+light_color = Color(0.99999994, 0.7288699, 0.36451954, 1)
+light_energy = 4.842
+light_indirect_energy = 0.0
+light_volumetric_fog_energy = 0.0
+light_angular_distance = 21.07
+
+[node name="CharacterBody3D" type="CharacterBody3D" parent="." unique_id=1797500668]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 5, 0)
+script = SubResource("GDScript_044q6")
+
+[node name="RoadGenerationUI" type="Control" parent="CharacterBody3D" unique_id=888067790]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_604k3")
+
+[node name="TextureRect" type="TextureRect" parent="CharacterBody3D/RoadGenerationUI" unique_id=1131671868]
+custom_minimum_size = Vector2(256, 256)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -268.0
+offset_top = -267.0
+grow_horizontal = 0
+grow_vertical = 0
+texture = ExtResource("2_fbnxr")
+expand_mode = 2
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="CharacterBody3D/RoadGenerationUI" unique_id=1524194001]
+custom_minimum_size = Vector2(256, 256)
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -256.0
+offset_top = -256.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="SubViewport" type="SubViewport" parent="CharacterBody3D/RoadGenerationUI/SubViewportContainer" unique_id=1643192780]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(256, 256)
+render_target_update_mode = 4
+
+[node name="MapCamera" type="Camera3D" parent="CharacterBody3D/RoadGenerationUI/SubViewportContainer/SubViewport" unique_id=1519112498 node_paths=PackedStringArray("player")]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 2005, 3)
+environment = SubResource("Environment_jyrer")
+projection = 1
+size = 1200.0
+near = 0.001
+script = SubResource("GDScript_aar7s")
+player = NodePath("../../../..")
+
+[node name="OptionsRect" type="TextureRect" parent="CharacterBody3D/RoadGenerationUI" unique_id=1869549701]
+modulate = Color(1, 1, 1, 0.21960784)
+custom_minimum_size = Vector2(550, 512)
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_fbnxr")
+
+[node name="OptionsContainer" type="HBoxContainer" parent="CharacterBody3D/RoadGenerationUI" unique_id=1610039411]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+grow_horizontal = 2
+metadata/_edit_lock_ = true
+
+[node name="GenerationOptions" type="VBoxContainer" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer" unique_id=1062237379]
+custom_minimum_size = Vector2(256, 256)
+layout_mode = 2
+
+[node name="GenerationTypeLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/GenerationOptions" unique_id=1257354254]
+layout_mode = 2
+text = "Generation Type"
+
+[node name="ItemList" type="ItemList" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/GenerationOptions" unique_id=512142974]
+layout_mode = 2
+auto_height = true
+item_count = 5
+item_0/text = "Archipelago"
+item_1/text = "Square"
+item_2/text = "Ring"
+item_3/text = "Circle"
+item_4/text = "Star (Planned)"
+item_4/selectable = false
+item_4/disabled = true
+
+[node name="SeedLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/GenerationOptions" unique_id=1274655610]
+layout_mode = 2
+text = "Seed"
+
+[node name="SeedLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/GenerationOptions" unique_id=616673399]
+layout_mode = 2
+text = "0"
+placeholder_text = "0"
+
+[node name="Button" type="Button" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/GenerationOptions" unique_id=1993219526]
+layout_mode = 2
+text = "Regenerate city"
+
+[node name="BuildingOptions" type="VBoxContainer" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer" unique_id=1160671461]
+custom_minimum_size = Vector2(256, 256)
+layout_mode = 2
+
+[node name="MaxHeightLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/BuildingOptions" unique_id=1945253742]
+layout_mode = 2
+text = "Max building height"
+
+[node name="MaxHeightLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/BuildingOptions" unique_id=1271718345]
+layout_mode = 2
+text = "1000"
+placeholder_text = "1000"
+
+[node name="CellSizeLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/BuildingOptions" unique_id=1882152380]
+layout_mode = 2
+text = "Building grid cell size"
+
+[node name="CellSizeLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/BuildingOptions" unique_id=328395799]
+layout_mode = 2
+text = "8"
+placeholder_text = "8"
+
+[node name="RingRoadOptions" type="VBoxContainer" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer" unique_id=1115868965]
+visible = false
+custom_minimum_size = Vector2(256, 256)
+layout_mode = 2
+
+[node name="RingOptionsLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions" unique_id=1186847590]
+layout_mode = 2
+text = "Ring gen options"
+
+[node name="RingSplitLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions" unique_id=1005258120]
+layout_mode = 2
+text = "Split Iterations"
+
+[node name="RingSplitLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions" unique_id=799253612]
+layout_mode = 2
+text = "0"
+placeholder_text = "0"
+
+[node name="MinAreaLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions" unique_id=87638658]
+layout_mode = 2
+text = "Min Split Area"
+
+[node name="MinAreaLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions" unique_id=79225835]
+layout_mode = 2
+text = "10000"
+placeholder_text = "10000"
+
+[node name="SplitBlockLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions" unique_id=71035842]
+layout_mode = 2
+text = "Split Block Chance"
+
+[node name="SplitBlockLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions" unique_id=135144906]
+layout_mode = 2
+text = "0.01"
+placeholder_text = "0.01"
+
+[node name="OuterRingsLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions" unique_id=866883174]
+layout_mode = 2
+text = "Number of outer rings"
+
+[node name="OuterRingsLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions" unique_id=1727518131]
+layout_mode = 2
+text = "1"
+placeholder_text = "1"
+
+[node name="OuterDistanceLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions" unique_id=149473089]
+layout_mode = 2
+text = "Distance between rings"
+
+[node name="OuterDistanceLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions" unique_id=1219204432]
+layout_mode = 2
+text = "500"
+placeholder_text = "500"
+
+[node name="StartRingRadiusLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions" unique_id=757689627]
+layout_mode = 2
+text = "Central ring radius"
+
+[node name="StartRingRadiusLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions" unique_id=427439206]
+layout_mode = 2
+text = "500"
+placeholder_text = "500"
+
+[node name="SquareRoadOptions" type="VBoxContainer" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer" unique_id=48291401]
+visible = false
+custom_minimum_size = Vector2(256, 256)
+layout_mode = 2
+
+[node name="SquareOptionsLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions" unique_id=692712832]
+layout_mode = 2
+text = "Square gen options"
+
+[node name="SquareDistanceLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions" unique_id=1987343415]
+layout_mode = 2
+text = "Generation radius"
+
+[node name="SquareDistanceLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions" unique_id=1366784584]
+layout_mode = 2
+text = "2"
+placeholder_text = "2"
+
+[node name="SquareSizeLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions" unique_id=917308711]
+layout_mode = 2
+text = "Square size"
+
+[node name="SquareSizeLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions" unique_id=1496225453]
+layout_mode = 2
+text = "495"
+placeholder_text = "495"
+
+[node name="MinSplitLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions" unique_id=148639229]
+layout_mode = 2
+text = "Min Split Iterations"
+
+[node name="MinSplitLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions" unique_id=390409844]
+layout_mode = 2
+text = "0"
+placeholder_text = "0"
+
+[node name="MaxSplitLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions" unique_id=1886842199]
+layout_mode = 2
+text = "Max Split Iterations"
+
+[node name="MaxSplitLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions" unique_id=1294926003]
+layout_mode = 2
+text = "0"
+placeholder_text = "0"
+
+[node name="MinAreaLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions" unique_id=417829083]
+layout_mode = 2
+text = "Min Split Area"
+
+[node name="MinAreaLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions" unique_id=1313386284]
+layout_mode = 2
+text = "1000"
+placeholder_text = "1000"
+
+[node name="SplitBlockLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions" unique_id=879123683]
+layout_mode = 2
+text = "Split Block Chance"
+
+[node name="SplitBlockLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions" unique_id=1774339440]
+layout_mode = 2
+text = "0.01"
+placeholder_text = "0.01"
+
+[node name="CircleRoadOptions" type="VBoxContainer" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer" unique_id=1368125344]
+visible = false
+custom_minimum_size = Vector2(256, 256)
+layout_mode = 2
+
+[node name="CircleOptionsLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions" unique_id=1127771335]
+layout_mode = 2
+text = "Circle options"
+
+[node name="CircleSplitLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions" unique_id=252656869]
+layout_mode = 2
+text = "Split Iterations"
+
+[node name="CircleSplitLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions" unique_id=2075700133]
+layout_mode = 2
+text = "0"
+placeholder_text = "0"
+
+[node name="MinAreaLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions" unique_id=125028738]
+layout_mode = 2
+text = "Min Split Area"
+
+[node name="MinAreaLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions" unique_id=1574154688]
+layout_mode = 2
+text = "10000"
+placeholder_text = "10000"
+
+[node name="SplitBlockLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions" unique_id=1601388709]
+layout_mode = 2
+text = "Split Block Chance"
+
+[node name="SplitBlockLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions" unique_id=2117371461]
+layout_mode = 2
+text = "0.01"
+placeholder_text = "0.01"
+
+[node name="CircleVerticesLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions" unique_id=1054782794]
+layout_mode = 2
+text = "Number of outer rings"
+
+[node name="CircleVerticesLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions" unique_id=1890300366]
+layout_mode = 2
+text = "10"
+placeholder_text = "10"
+
+[node name="CircleRadiusLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions" unique_id=148168028]
+layout_mode = 2
+text = "Circle radius"
+
+[node name="CircleRadiusLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions" unique_id=1244594970]
+layout_mode = 2
+text = "500"
+placeholder_text = "500"
+
+[node name="ArchipelagoOptions" type="VBoxContainer" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer" unique_id=1611503305]
+custom_minimum_size = Vector2(256, 256)
+layout_mode = 2
+
+[node name="ArchOptionsLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/ArchipelagoOptions" unique_id=1145409564]
+layout_mode = 2
+text = "Archipelago options"
+
+[node name="IslandAmountLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/ArchipelagoOptions" unique_id=267416118]
+layout_mode = 2
+text = "Major islands amount"
+
+[node name="IslandAmountLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/OptionsContainer/ArchipelagoOptions" unique_id=979723100]
+layout_mode = 2
+text = "3"
+placeholder_text = "3"
+
+[node name="PlayerOptions" type="HBoxContainer" parent="CharacterBody3D/RoadGenerationUI" unique_id=791754432]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 50.0
+offset_top = -100.0
+offset_right = 50.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="Label" type="Label" parent="CharacterBody3D/RoadGenerationUI/PlayerOptions" unique_id=520301941]
+layout_mode = 2
+text = "Player Options "
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CharacterBody3D/RoadGenerationUI/PlayerOptions" unique_id=1251133380]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+
+[node name="SpeedLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/PlayerOptions/VBoxContainer" unique_id=1165315556]
+layout_mode = 2
+text = "Speed"
+
+[node name="SpeedLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/PlayerOptions/VBoxContainer" unique_id=1917419572]
+layout_mode = 2
+text = "100"
+placeholder_text = "100"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="CharacterBody3D/RoadGenerationUI/PlayerOptions" unique_id=829983165]
+custom_minimum_size = Vector2(150, 0)
+layout_mode = 2
+
+[node name="FlightLabel" type="Label" parent="CharacterBody3D/RoadGenerationUI/PlayerOptions/VBoxContainer2" unique_id=1926257685]
+layout_mode = 2
+text = "Flight"
+
+[node name="FlightLineEdit" type="LineEdit" parent="CharacterBody3D/RoadGenerationUI/PlayerOptions/VBoxContainer2" unique_id=1653063194]
+layout_mode = 2
+text = "100"
+placeholder_text = "100"
+
+[node name="Note" type="Label" parent="CharacterBody3D/RoadGenerationUI" unique_id=1505383961]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -231.0
+offset_top = -23.0
+offset_right = 231.0
+grow_horizontal = 2
+grow_vertical = 0
+text = "NOTE: Press Enter after inputting a value to actually apply it"
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D" unique_id=1653758724]
+shape = SubResource("CapsuleShape3D_044q6")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CharacterBody3D/CollisionShape3D" unique_id=479339793]
+mesh = SubResource("CapsuleMesh_3y1tt")
+skeleton = NodePath("../..")
+
+[node name="PlayerCamera" type="Camera3D" parent="CharacterBody3D" unique_id=455843324]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2, 5)
+
+[node name="Water" type="MeshInstance3D" parent="." unique_id=996302976]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -5, 0)
+mesh = SubResource("PlaneMesh_044q6")
+script = SubResource("GDScript_le8xr")
+metadata/_edit_lock_ = true
+
+[connection signal="item_selected" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/GenerationOptions/ItemList" to="CharacterBody3D/RoadGenerationUI" method="_on_item_list_item_selected"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/GenerationOptions/SeedLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_seed_line_edit_text_submitted"]
+[connection signal="button_down" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/GenerationOptions/Button" to="CharacterBody3D/RoadGenerationUI" method="_on_button_button_down"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/BuildingOptions/MaxHeightLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_max_height_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/BuildingOptions/CellSizeLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_cell_size_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions/RingSplitLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_ring_split_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions/MinAreaLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_min_area_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions/SplitBlockLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_split_block_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions/OuterRingsLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_outer_rings_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions/OuterDistanceLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_outer_distance_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/RingRoadOptions/StartRingRadiusLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_start_ring_radius_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions/SquareDistanceLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_square_distance_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions/SquareSizeLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_square_size_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions/MinSplitLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_min_split_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions/MaxSplitLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_max_split_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions/MinAreaLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_min_area_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/SquareRoadOptions/SplitBlockLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_split_block_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions/CircleSplitLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_circle_split_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions/MinAreaLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_min_area_circle_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions/SplitBlockLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_split_block_circle_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions/CircleVerticesLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_circle_vertices_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/CircleRoadOptions/CircleRadiusLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_circle_radius_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/OptionsContainer/ArchipelagoOptions/IslandAmountLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_island_amount_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/PlayerOptions/VBoxContainer/SpeedLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_speed_line_edit_text_submitted"]
+[connection signal="text_submitted" from="CharacterBody3D/RoadGenerationUI/PlayerOptions/VBoxContainer2/FlightLineEdit" to="CharacterBody3D/RoadGenerationUI" method="_on_flight_line_edit_text_submitted"]

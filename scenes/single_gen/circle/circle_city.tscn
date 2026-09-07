@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://c08jvqxd2224y"]
+
+[ext_resource type="Script" uid="uid://drooeb1ntfff6" path="res://scenes/terrain_no_addons/single_gen/circle/circle_city.gd" id="1_bxpj0"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aar7s"]
+albedo_color = Color(1, 1, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_sdo55"]
+
+[node name="CircleCity" type="Node3D" unique_id=320304174]
+script = ExtResource("1_bxpj0")
+split_iterations = 0
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=2098571997]
+
+[node name="GroundMesh" type="MeshInstance3D" parent="StaticBody3D" unique_id=668322880]
+material_override = SubResource("StandardMaterial3D_aar7s")
+mesh = SubResource("BoxMesh_sdo55")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=2145075244]

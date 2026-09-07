@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://v0re3eqcu4yr"]
+
+[ext_resource type="Script" uid="uid://7n8wenatqgif" path="res://scenes/terrain_no_addons/prefabs/sea_transportation/ship.gd" id="1_8b6i1"]
+[ext_resource type="PackedScene" uid="uid://dixiy86b38h2t" path="res://assets/ship/Viking boat.fbx" id="2_4f83h"]
+
+[node name="Ship" type="Node3D" unique_id=1643363921]
+script = ExtResource("1_8b6i1")
+
+[node name="Viking boat" parent="." unique_id=1507204069 instance=ExtResource("2_4f83h")]
+transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, 0, -3, 0)

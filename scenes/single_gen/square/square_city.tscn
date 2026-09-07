@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://bwf5m1ix0f5xi"]
+
+[ext_resource type="Script" uid="uid://bgug26dkow1n0" path="res://scenes/terrain_no_addons/single_gen/square/square.gd" id="1_wcac5"]
+[ext_resource type="Shader" uid="uid://bl6642mw48xt3" path="res://scenes/terrain_no_addons/assets/basic_terrain.gdshader" id="2_506pd"]
+
+[sub_resource type="Gradient" id="Gradient_rx4e2"]
+colors = PackedColorArray(0.9433943, 0.94339424, 2.3102762e-06, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_qxlkc"]
+gradient = SubResource("Gradient_rx4e2")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_jw7ep"]
+render_priority = 0
+shader = ExtResource("2_506pd")
+shader_parameter/height = 16.0
+shader_parameter/color_gradient = SubResource("GradientTexture1D_qxlkc")
+
+[sub_resource type="BoxMesh" id="BoxMesh_jlfxw"]
+
+[node name="SquareCity" type="Node3D" unique_id=115847027]
+script = ExtResource("1_wcac5")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=378071707]
+
+[node name="GroundMesh" type="MeshInstance3D" parent="StaticBody3D" unique_id=1352596937]
+material_override = SubResource("ShaderMaterial_jw7ep")
+mesh = SubResource("BoxMesh_jlfxw")
+skeleton = NodePath("../..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=991985088]

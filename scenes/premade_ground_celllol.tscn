@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://da3dpbxrcgdcp"]
+
+[ext_resource type="Shader" uid="uid://d2wyv0pk3x1l0" path="res://scenes/terrain_no_addons/assets/ground_shader.gdshader" id="1_7b078"]
+[ext_resource type="Texture2D" uid="uid://dlht8tyjcnmd6" path="res://assets/textures/city-pavement-ground-texture.jpg" id="2_4nv1x"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_pgjp3"]
+size = Vector3(1024, 1, 1024)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pgjp3"]
+render_priority = 0
+shader = ExtResource("1_7b078")
+shader_parameter/ground_texture = ExtResource("2_4nv1x")
+shader_parameter/tile_scale = 0.01
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_044q6"]
+material = SubResource("ShaderMaterial_pgjp3")
+uv2_padding = 0.0
+size = Vector2(1024, 1024)
+
+[node name="PremadeGroundCell" type="StaticBody3D" unique_id=355266480]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=390049889]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -2, 0)
+shape = SubResource("BoxShape3D_pgjp3")
+
+[node name="CityGround" type="MeshInstance3D" parent="CollisionShape3D" unique_id=927113447]
+transform = Transform3D(1.8, 0, 0, 0, 1, 0, 0, 0, 1.4364195, 0, 0, 0)
+mesh = SubResource("PlaneMesh_044q6")
+skeleton = NodePath("../../..")

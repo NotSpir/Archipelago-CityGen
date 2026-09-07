@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://hv7smkowhtq8"]
+
+[ext_resource type="Script" uid="uid://cby6svxpyunyq" path="res://scenes/terrain_no_addons/small_islands/small_island.gd" id="1_m3oua"]
+[ext_resource type="Shader" uid="uid://bl6642mw48xt3" path="res://scenes/terrain_no_addons/assets/basic_terrain.gdshader" id="2_m3oua"]
+
+[sub_resource type="Gradient" id="Gradient_padoy"]
+offsets = PackedFloat32Array(0, 0.5135135, 1)
+colors = PackedColorArray(0.3253461, 0.15136382, 0, 1, 0.51010144, 0.59089833, 0.021837307, 1, 0.41456756, 0.8889922, 0, 1)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_m3oua"]
+gradient = SubResource("Gradient_padoy")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_w61bn"]
+render_priority = 0
+shader = ExtResource("2_m3oua")
+shader_parameter/height = 128.0
+shader_parameter/color_gradient = SubResource("GradientTexture1D_m3oua")
+
+[node name="TestIsland" type="Node3D" unique_id=410124550]
+script = ExtResource("1_m3oua")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=620799259]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 50, 0)
+material_override = SubResource("ShaderMaterial_w61bn")

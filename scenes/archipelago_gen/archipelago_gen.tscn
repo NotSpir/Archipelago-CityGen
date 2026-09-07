@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://bb4nlr2ltb6gb"]
+
+[ext_resource type="Script" uid="uid://3sniqb6bmvre" path="res://scenes/terrain_no_addons/archipelago_gen/archipelago_gen.gd" id="1_jcqa4"]
+
+[node name="ArchipelagoGen" type="Node3D" unique_id=1832240022]
+script = ExtResource("1_jcqa4")

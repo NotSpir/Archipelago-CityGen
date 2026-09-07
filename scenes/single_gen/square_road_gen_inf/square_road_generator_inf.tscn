@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://bah06dja35da5"]
+
+[ext_resource type="Script" uid="uid://cj7igm8ep1qwu" path="res://scenes/terrain_no_addons/single_gen/square_road_gen_inf/square_road_generator_inf.gd" id="1_iw7g8"]
+
+[node name="RectRoadGenerator" type="Node3D" unique_id=665048610]
+script = ExtResource("1_iw7g8")
+square_distance = 3
+max_split_iterations = 5
+split_block_chance = 0.05
+minimum_split_area = 1000
+max_blocked_sector_size = 10000000
+sector_edge_distance = 17.0
+minimal_building_area = 3000.0
+
+[node name="SectorPaths" type="Node3D" parent="." unique_id=805072686]
+
+[node name="BuildingMeshes" type="Node3D" parent="." unique_id=1622344635]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
+
+[node name="RoadSections" type="Node3D" parent="." unique_id=1184420590]

@@ -1,0 +1,71 @@
+[gd_scene format=3 uid="uid://dtlxgjynanokq"]
+
+[ext_resource type="Texture2D" uid="uid://pyo32n1shnmm" path="res://assets/textures/concrete.png" id="1_5nqwc"]
+[ext_resource type="Script" uid="uid://i4dmxfafawev" path="res://scenes/terrain_no_addons/prefabs/sea_transportation/seaport.gd" id="1_pntk1"]
+[ext_resource type="PackedScene" uid="uid://bwv2v1crxujn8" path="res://assets/lighthouse/lighthouse.blend" id="2_x5fjs"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_jyrer"]
+albedo_color = Color(0.60799605, 0.25044733, 0, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_6s85x"]
+material = SubResource("StandardMaterial3D_jyrer")
+size = Vector2(250, 25)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_sboej"]
+albedo_color = Color(0.60784316, 0.2509804, 0, 1)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_044q6"]
+material = SubResource("StandardMaterial3D_sboej")
+size = Vector2(25, 100)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_l7ur6"]
+albedo_color = Color(0.73300546, 0.7330054, 0.7330054, 1)
+albedo_texture = ExtResource("1_5nqwc")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_3y1tt"]
+material = SubResource("StandardMaterial3D_l7ur6")
+size = Vector2(250, 200)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_pntk1"]
+albedo_color = Color(0.99999994, 0.04050286, 0.022352692, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_3y1tt"]
+material = SubResource("StandardMaterial3D_pntk1")
+size = Vector3(20, 200, 20)
+
+[node name="Seaport" type="Node3D" unique_id=1737522229]
+script = ExtResource("1_pntk1")
+
+[node name="lighthouse" parent="." unique_id=2135069214 instance=ExtResource("2_x5fjs")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, -12.331028, 2.9923706)
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="." unique_id=1777317221]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -221.88647)
+mesh = SubResource("PlaneMesh_6s85x")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=461682280]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -161.71143)
+mesh = SubResource("PlaneMesh_044q6")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=624069567]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -15.183838)
+mesh = SubResource("PlaneMesh_3y1tt")
+
+[node name="DockingPoints" type="Node3D" parent="." unique_id=867235581]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -142.0119)
+
+[node name="Point1" type="Node3D" parent="DockingPoints" unique_id=1736970383]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -125, 0, -175)
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="DockingPoints/Point1" unique_id=177665453]
+visible = false
+mesh = SubResource("BoxMesh_3y1tt")
+skeleton = NodePath("../../..")
+
+[node name="Point2" type="Node3D" parent="DockingPoints" unique_id=1117924329]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 125, 0, -175)
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="DockingPoints/Point2" unique_id=990901546]
+visible = false
+mesh = SubResource("BoxMesh_3y1tt")
+skeleton = NodePath("../../..")
